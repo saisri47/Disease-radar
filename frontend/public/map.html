@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet_heat.min.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+        }
+        .leaflet-container { font-size: 1rem; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+</body>
+<script>
+const queryApiBaseUrl = new URLSearchParams(window.location.search).get('apiBaseUrl');
+const API_BASE_URL = (queryApiBaseUrl || window.__DISEASE_RADAR_API_BASE_URL__ || 'http://127.0.0.1:8000').replace(/\/$/, '');
+
+// Initialize map
+const map = L.map('map', {
+    center: [20.5937, 78.9629],  // Center of India
+    zoom: 5,
+    zoomControl: true,
+    preferCanvas: false
+});
+
+// Add tile layer
+L.tileLayer(
+    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+        minZoom: 0,
+        maxZoom: 19,
+        maxNativeZoom: 19,
+        noWrap: false,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        subdomains: 'abc',
+        detectRetina: false,
+        tms: false,
+        opacity: 1
+    }
+).addTo(map);
+
+// Pincode coordinates mapping (approximate centers for Indian pincodes)
+const pincodeCoords = {
+    '110001': [28.6355, 77.2300],  // Delhi
+    '110011': [28.7041, 77.1025],
+    '400001': [18.9520, 72.8347],  // Mumbai  
+    '400051': [19.0176, 72.8479],
+    '560001': [12.9716, 77.5946],  // Bangalore
+    '560034': [13.1939, 77.7064],
+    '500001': [17.3850, 78.4867],  // Hyderabad
+    '500004': [17.3645, 78.4744],
+    '600001': [13.0827, 80.2707],  // Chennai
+    '600004': [13.0489, 80.2795],
+    '700001': [22.5726, 88.3639],  // Kolkata
+    '700013': [22.5958, 88.3932],
+    '380001': [23.1815, 72.6298],  // Ahmedabad
+    '380014': [23.0225, 72.5714],
+    '411001': [18.5204, 73.8567],  // Pune
+    '411005': [18.5670, 73.8200],
+    '302001': [26.9124, 75.7873],  // Jaipur
+    '201301': [28.5821, 77.3912]   // Noida
+};
+
+let heatmapPoints = [];
+let markersGroup = L.featureGroup().addTo(map);
+let allReports = [];
+let visibleSymptoms = ['Fever', 'Cough', 'Shortness of Breath', 'Headache', 'Body Aches', 'Fatigue'];
+
+// Function to convert pincode to coordinates
+function getPincodeCoords(pincode) {
+    return pincodeCoords[pincode] || null;
+}
+
+function getReportCoords(report) {
+    if (typeof report.latitude === 'number' && typeof report.longitude === 'number') {
+        return [report.latitude, report.longitude];
+    }
+    return getPincodeCoords(report.pincode);
+}
+
+// Function to filter and update map based on visible symptoms
+function updateMapWithFilters() {
+    try {
+        // Clear existing layers
+        markersGroup.clearLayers();
+        
+        // Rebuild heatmap and markers with filtered data
+        heatmapPoints = [];
+        
+        allReports.forEach(report => {
+            const coords = getReportCoords(report);
+            if (coords) {
+                // Check if any of the report symptoms are in visible symptoms
+                const hasVisibleSymptom = report.symptoms.some(symptom => 
+                    visibleSymptoms.some(vs => symptom.toLowerCase().includes(vs.toLowerCase()))
+                );
+                
+                if (hasVisibleSymptom) {
+                    // Add to heatmap
+                    const intensity = Math.min(report.symptoms.length, 5) / 5;
+                    heatmapPoints.push([...coords, intensity]);
+                    
+                    // Add marker
+                    const popupContent = `
+                        <div style="font-family: Arial; font-size: 12px;">
+                            <b>${report.location_label || report.pincode || 'Unknown'}</b><br/>
+                            Location: ${report.location_label || report.pincode || 'Unknown'}<br/>
+                            Verified disease: ${report.verified_disease || 'Pending classification'}<br/>
+                            Symptoms: ${report.symptoms.join(', ')}<br/>
+                            Approved case logged: ${report.created_at}
+                        </div>
+                    `;
+                    
+                    L.circleMarker(coords, {
+                        radius: Math.min(5 + report.symptoms.length, 15),
+                        fillColor: '#00d9ff',
+                        color: '#0d1117',
+                        weight: 2,
+                        opacity: 0.8,
+                        fillOpacity: 0.7
+                    })
+                    .bindPopup(popupContent)
+                    .addTo(markersGroup);
+                }
+            }
+        });
+        
+        // Update heatmap layer
+        if (heatmapPoints.length > 0) {
+            // Remove old heatmap if exists
+            map.eachLayer(layer => {
+                if (layer instanceof L.HeatLayer) {
+                    map.removeLayer(layer);
+                }
+            });
+            
+            // Add new heatmap
+            L.heatLayer(heatmapPoints, {
+                minOpacity: 0.2,
+                maxZoom: 13,
+                radius: 25,
+                blur: 15,
+                gradient: {0.0: '#0d1117', 0.25: '#4d9cff', 0.5: '#00d9ff', 0.75: '#ff6b6b', 1.0: '#e1181c'}
+            }).addTo(map);
+        }
+    } catch (error) {
+        console.error('Error updating map with filters:', error);
+    }
+}
+
+// Function to fetch reports and update map
+async function updateMap() {
+    try {
+        // Fetch all reports
+        const response = await fetch(`${API_BASE_URL}/api/reports?limit=200`);
+        const reports = await response.json();
+        
+        if (!reports || reports.length === 0) {
+            console.log('No reports to display');
+            return;
+        }
+
+        // Store all reports
+        allReports = reports;
+        
+        // Update map with filters
+        updateMapWithFilters();
+    } catch (error) {
+        console.error('Error updating map:', error);
+    }
+}
+
+// Listen for messages from parent window (React component)
+window.addEventListener('message', (event) => {
+    if (event.data.type === 'FILTER_SYMPTOMS') {
+        visibleSymptoms = event.data.visibleSymptoms || [];
+        updateMapWithFilters();
+    }
+});
+
+// Initial update
+updateMap();
+
+// Auto-refresh every 30 seconds
+setInterval(updateMap, 30000);
+
+// Add legend
+const legend = L.control({position: 'bottomright'});
+legend.onAdd = function (map) {
+    const div = L.DomUtil.create('div', 'legend');
+    div.style.backgroundColor = '#0d1117';
+    div.style.border = '2px solid #00d9ff';
+    div.style.borderRadius = '5px';
+    div.style.padding = '10px';
+    div.style.color = '#e6edf3';
+    div.style.fontSize = '12px';
+    div.innerHTML = `
+        <div><b>Disease Radar Map</b></div>
+        <div style="margin-top: 8px;">
+            <div>🔵 Markers = Approved cases</div>
+            <div>🔥 Heat = Verified intensity</div>
+            <div>⟲ Updates: 30s</div>
+        </div>
+    `;
+    return div;
+};
+legend.addTo(map);
+</script>
+</html>

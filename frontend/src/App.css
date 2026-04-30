@@ -1,0 +1,18 @@
+/* App Layout Styles */
+
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app-main {
+  flex: 1;
+}
+
+/* Smooth Page Transitions */
+.app-main {
+  animation: fadeIn 0.3s ease-out;
+}

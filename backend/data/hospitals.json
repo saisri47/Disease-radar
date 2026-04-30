@@ -1,0 +1,166 @@
+{
+  "110001": [
+    {
+      "name": "City General Hospital",
+      "facility_type": "Hospital",
+      "pincode": "110001",
+      "address": "Connaught Place, New Delhi",
+      "phone": "+91-11-4000-1001",
+      "specialty": "General Medicine"
+    },
+    {
+      "name": "Metro Care Clinic",
+      "facility_type": "Clinic",
+      "pincode": "110001",
+      "address": "Baba Kharak Singh Marg, New Delhi",
+      "phone": "+91-11-4000-1002",
+      "specialty": "General Physician"
+    },
+    {
+      "name": "Central Emergency Centre",
+      "facility_type": "Hospital",
+      "pincode": "110001",
+      "address": "Barakhamba Road, New Delhi",
+      "phone": "+91-11-4000-1003",
+      "specialty": "Emergency Care"
+    }
+  ],
+  "400001": [
+    {
+      "name": "Mumbai City Hospital",
+      "facility_type": "Hospital",
+      "pincode": "400001",
+      "address": "Fort, Mumbai",
+      "phone": "+91-22-4100-2001",
+      "specialty": "General Medicine"
+    },
+    {
+      "name": "Harbour Health Clinic",
+      "facility_type": "Clinic",
+      "pincode": "400001",
+      "address": "Churchgate, Mumbai",
+      "phone": "+91-22-4100-2002",
+      "specialty": "General Physician"
+    }
+  ],
+  "560001": [
+    {
+      "name": "Bangalore Central Hospital",
+      "facility_type": "Hospital",
+      "pincode": "560001",
+      "address": "MG Road, Bengaluru",
+      "phone": "+91-80-4200-3001",
+      "specialty": "General Medicine"
+    },
+    {
+      "name": "PulmoCare Centre",
+      "facility_type": "Hospital",
+      "pincode": "560001",
+      "address": "Brigade Road, Bengaluru",
+      "phone": "+91-80-4200-3002",
+      "specialty": "Pulmonology"
+    }
+  ],
+  "500001": [
+    {
+      "name": "Hyderabad General Hospital",
+      "facility_type": "Hospital",
+      "pincode": "500001",
+      "address": "Abids, Hyderabad",
+      "phone": "+91-40-4300-4001",
+      "specialty": "General Medicine",
+      "latitude": 17.3948,
+      "longitude": 78.4747
+    }
+  ],
+  "500008": [
+    {
+      "name": "Cloud7 Hospitals",
+      "facility_type": "Hospital",
+      "pincode": "500008",
+      "address": "Vivekananda Nagar, Shaikpet, Tolichowki, Hyderabad",
+      "phone": "+91-8143740365",
+      "specialty": "Emergency Care",
+      "latitude": 17.4012,
+      "longitude": 78.4006
+    },
+    {
+      "name": "Premier Hospital",
+      "facility_type": "Hospital",
+      "pincode": "500008",
+      "address": "Tolichowki, Hyderabad",
+      "phone": "+91-9100907036",
+      "specialty": "General Medicine",
+      "latitude": 17.4042,
+      "longitude": 78.4047
+    },
+    {
+      "name": "CARE Medical Center Tolichowki",
+      "facility_type": "Clinic",
+      "pincode": "500008",
+      "address": "Tolichowki, Hyderabad",
+      "phone": "+91-40-68106529",
+      "specialty": "Multispecialty Care",
+      "latitude": 17.4071,
+      "longitude": 78.404
+    }
+  ],
+  "600001": [
+    {
+      "name": "Chennai Primary Hospital",
+      "facility_type": "Hospital",
+      "pincode": "600001",
+      "address": "George Town, Chennai",
+      "phone": "+91-44-4400-5001",
+      "specialty": "General Medicine"
+    }
+  ],
+  "700001": [
+    {
+      "name": "Kolkata City Medical Centre",
+      "facility_type": "Hospital",
+      "pincode": "700001",
+      "address": "BBD Bagh, Kolkata",
+      "phone": "+91-33-4500-6001",
+      "specialty": "General Medicine"
+    }
+  ],
+  "302001": [
+    {
+      "name": "Jaipur Community Hospital",
+      "facility_type": "Hospital",
+      "pincode": "302001",
+      "address": "MI Road, Jaipur",
+      "phone": "+91-141-4600-7001",
+      "specialty": "General Medicine"
+    }
+  ],
+  "201301": [
+    {
+      "name": "Noida Health Hub",
+      "facility_type": "Hospital",
+      "pincode": "201301",
+      "address": "Sector 18, Noida",
+      "phone": "+91-120-4700-8001",
+      "specialty": "General Medicine"
+    }
+  ],
+  "default": [
+    {
+      "name": "Regional General Hospital",
+      "facility_type": "Hospital",
+      "pincode": "000000",
+      "address": "Nearest configured city hospital",
+      "phone": "+91-0000-000000",
+      "specialty": "General Medicine"
+    },
+    {
+      "name": "Primary Care Clinic",
+      "facility_type": "Clinic",
+      "pincode": "000000",
+      "address": "Nearest configured city clinic",
+      "phone": "+91-0000-000001",
+      "specialty": "General Physician"
+    }
+  ]
+}
